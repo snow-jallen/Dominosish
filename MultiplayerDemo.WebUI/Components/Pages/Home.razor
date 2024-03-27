@@ -1,7 +1,31 @@
 ﻿@page "/"
+@inject NavigationManager NavigationManager
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Play Dominos-ish</h1>
 
-Welcome to your new app.
+@if(Game.Instance.Player2 is null)
+{
+    <input @bind=newPlayerName placeholder="Your Name" />
+    <button @onclick=joinGame>Join Game</button>
+}
+else
+{
+    <p>Sorry, looks like the game is full</p>
+    <p>@game.Player1.Name is already playing @game.Player2.Name</p>
+}
+
+@code {
+    string newPlayerName;
+    Game game = Game.Instance;
+    protected override void OnInitialized()
+    {
+        game.GameStateChanged += ()=> InvokeAsync(StateHasChanged);
+    }
+    void joinGame()
+    {
+        game.Join(newPlayerName);
+        NavigationManager.NavigateTo($"/play?playerName={newPlayerName}");
+    }
+}

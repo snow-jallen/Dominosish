@@ -1,0 +1,92 @@
+﻿@page "/play"
+@using MultiplayerDemo.Logic.Exceptions
+
+@if (me is null)
+{
+    <div>There is no player @PlayerName</div>
+}
+else
+{
+    <h3>Play for @me.Name</h3>
+
+    <div class="row">
+        <div class="col-4">
+            <h4>My Tiles</h4>
+            @foreach (var tile in me.Tiles)
+            {
+                <p @onclick=@(()=>playTile(tile))>(@tile.Num1, @tile.Num2)</p>
+            }
+        </div>
+        <div class="col-4">
+            <h4>Game Board</h4>
+            @foreach (var tile in game.Board)
+            {
+                <p>(@tile.Num1, @tile.Num2)</p>
+            }
+        </div>
+        <div class="col-4">
+            @if (other is null)
+            {
+                <div>Waiting for another player...</div>
+            }
+            else
+            {
+                <h4>@other.Name's Tiles</h4>
+                foreach (var tile in other.Tiles)
+                {
+                    <p>(X, X)</p>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h4>Errors</h4>
+        </div>
+        @foreach (var error in errors)
+        {
+            <div>@error</div>
+        }
+    </div>
+}
+
+@code {
+    Game game = Game.Instance;
+    Player? me;
+    Player? other;
+    List<string> errors = new();
+
+    protected override void OnInitialized()
+    {
+        game.GameStateChanged += () =>
+        {
+            if (other is null)
+            {
+                other = game.Player1 == me ? game.Player2 : game.Player1;
+            }
+            InvokeAsync(StateHasChanged);
+        };
+    }
+
+    [SupplyParameterFromQuery]
+    public string PlayerName { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        me = game.Player1?.Name == PlayerName ? game.Player1 : game.Player2?.Name == PlayerName ? game.Player2 : null;
+        other = game.Player1 == me ? game.Player2 : game.Player1;
+    }
+
+    void playTile(Tile t)
+    {
+        try
+        {
+            game.PlayTile(me, t);
+        }
+        catch (InvalidMoveException)
+        {
+            errors.Add($"You cannot play {t} on {game.Board.Last()}");
+        }
+    }
+}
