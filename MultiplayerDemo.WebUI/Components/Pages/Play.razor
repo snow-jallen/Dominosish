@@ -1,11 +1,11 @@
 ﻿@page "/play"
-@using MultiplayerDemo.Logic.Exceptions
+@inject NavigationManager NavigationManager
 
 @if (me is null)
 {
     <div>There is no player @PlayerName</div>
 }
-else
+else if(!game.IsGameOver)
 {
     <h3>Play for @me.Name</h3>
 
@@ -50,6 +50,23 @@ else
         }
     </div>
 }
+else
+{
+    <h3>Game Over</h3>
+    @if(game.Player1.Tiles.Count == game.Player2.Tiles.Count)
+    {
+        <p>It's a tie!</p>
+    }
+    else if(game.Winner == other)
+    {
+        <p>You lose :-(</p>
+    }
+    else
+    {
+        <p>You win!</p>
+    }
+    <button @onclick="playAgain">Play Again</button>
+}
 
 @code {
     Game game = Game.Instance;
@@ -67,6 +84,11 @@ else
             }
             InvokeAsync(StateHasChanged);
         };
+
+        game.GameReset += () =>
+        {
+            NavigationManager.NavigateTo("/");
+        };
     }
 
     [SupplyParameterFromQuery]
@@ -76,6 +98,7 @@ else
     {
         me = game.Player1?.Name == PlayerName ? game.Player1 : game.Player2?.Name == PlayerName ? game.Player2 : null;
         other = game.Player1 == me ? game.Player2 : game.Player1;
+        errors.Clear();
     }
 
     void playTile(Tile t)
@@ -88,5 +111,10 @@ else
         {
             errors.Add($"You cannot play {t} on {game.Board.Last()}");
         }
+    }
+
+    void playAgain()
+    {
+        game.Reset();
     }
 }

@@ -5,7 +5,7 @@ namespace MultiplayerDemo.Logic;
 
 public class Game
 {
-    public static Game Instance { get; } = new Game();
+    public static Game Instance { get; private set; } = new Game();
 
     public Player? Player1 { get; private set; }
     public Player? Player2 { get; private set; }
@@ -17,8 +17,19 @@ public class Game
     }
 
     public bool IsPlayable => Player1 is not null && Player2 is not null && !IsGameOver;
-    public bool IsGameOver => Player1.Tiles.Count == 0 || Player2.Tiles.Count == 0 || NoOneCanPlay;
-    public bool NoOneCanPlay => !Player1.HasMatchFor(Board.Last()) && !Player2.HasMatchFor(Board.Last());
+    public bool IsGameOver => Player1?.Tiles.Count == 0 || Player2?.Tiles.Count == 0 || NoOneCanPlay;
+    public bool NoOneCanPlay
+    {
+        get
+        {
+            if (Player1 is null || Player2 is null)
+                return false;
+
+            var player1CanPlay = Player1.HasMatchFor(Board.Last());
+            var player2CanPlay = Player2.HasMatchFor(Board.Last());
+            return !player1CanPlay && !player2CanPlay;
+        }
+    }
     public Player? Winner => !IsGameOver ? null : (Player1.Tiles.Count < Player2.Tiles.Count ? Player1 : Player2);
 
     public void Join(string newPlayerName)
@@ -48,6 +59,7 @@ public class Game
         Player1 = null;
         Player2 = null;
         Board = new List<Tile> { new Tile(1, 1) };
+        GameReset?.Invoke();
     }
 
     public void PlayTile(Player newPlayer1, Tile tileToPlay)
@@ -76,5 +88,6 @@ public class Game
     }
 
     public event Action? GameStateChanged;
+    public event Action? GameReset;
 
 }

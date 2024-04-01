@@ -15,5 +15,6 @@ public class Player
         Tiles.AddRange(Enumerable.Range(0, tileCount).Select(_ => new Tile()));
     }
 
-    internal bool HasMatchFor(Tile other) => Tiles.Any(t => t.Num1 == other.Num1 || t.Num1 == other.Num2 || t.Num2 == other.Num1 || t.Num2 == other.Num2);
+    internal bool HasMatchFor(Tile other) =>
+        Tiles.Any(t => t.Num1 == other.Num2 || t.Num2 == other.Num2);
 }
