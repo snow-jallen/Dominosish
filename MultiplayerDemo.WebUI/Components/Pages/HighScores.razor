@@ -1,0 +1,38 @@
+﻿@page "/highscores"
+@using MultiplayerDemo.Persistence
+
+<h3>High Scores</h3>
+
+@if (scores is null)
+{
+    <p>No high scores yet...</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var highScore in scores)
+        {
+        <div class="col">
+            <dl>
+                <dt>Date/Time</dt>
+                <dd>@highScore.Timestamp</dd>
+                <dt>Name</dt>
+                <dd>@highScore.Name</dd>
+                <dt>Score</dt>
+                <dd>@highScore.Score</dd>
+                <dt>Quote</dt>
+                <dd>@highScore.Quote</dd>
+            </dl>
+        </div>
+        }
+    </div>
+}
+
+@code {
+    IEnumerable<HighScore> scores;
+
+    protected override async Task OnInitializedAsync()
+    {
+        scores = await JsonHighScoreRepository.Instance.GetHighScoresAsync();
+    }
+}
