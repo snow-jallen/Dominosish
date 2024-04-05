@@ -1,0 +1,26 @@
+p {
+    background-color: black;
+    color: white;
+    width: 80px;
+    text-align: center;
+    padding: 3px;
+    border-radius: 5px;
+}
+
+.win {
+    background-color: green;
+    width: 150px;
+    text-align: center;
+    padding: 10px;
+    color: yellow;
+}
+
+.lose {
+    background-color: rgba(255, 0, 0, 0.8);
+    width: 190px;
+    text-align: center;
+    padding: 10px;
+    color: rgba(0,0,0,1);
+    font-weight: bold;
+    border-radius: 30px;
+}

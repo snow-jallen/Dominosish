@@ -2,13 +2,18 @@
 @inject NavigationManager navManager
 @inject ILogger<Home> logger
 
-<h1>Games</h1>
-@foreach(var item in openGames)
+@if (openGames.Any())
 {
-    <button @onclick=@(() => joinGame(item.Id)) class="btn btn-primary m-3">
-        Join Game with @(item.Game.Player1?.Name ?? "[Unknown Player]")
-    </button>
+    <h1>Join an Existing Game</h1>
+    @foreach (var item in openGames)
+    {
+        <button @onclick=@(() => joinGame(item.Id)) class="btn btn-primary m-3">
+            Join game with @(item.Game.Player1?.Name ?? "[Unknown Player]")
+        </button>
+    }
 }
+<hr>
+<h1>Create Your Own Game</h1>
 <button class="btn btn-primary m-3" @onclick=createNewGame>Create New Game</button>
 
 @code {
@@ -25,19 +30,19 @@
         var newGame = new Game();
         GameHost.Instance.Games.Add(newGame);
         GameHost.Instance.RaiseHostStateChanged();
-        navManager.NavigateTo($"/join?gameid={GameHost.Instance.Games.Count-1}");
+        navManager.NavigateTo($"/join?gameid={GameHost.Instance.Games.Count - 1}");
     }
     void refresh()
     {
         openGames = (from game in GameHost.Instance.Games
-                                          let index = GameHost.Instance.Games.IndexOf(game)
-                                          where game.Player2 is null
-                                          select (index, game)).ToList();
+                     let index = GameHost.Instance.Games.IndexOf(game)
+                     where game.Player2 is null
+                     select (index, game)).ToList();
         StateHasChanged();
     }
     protected override void OnInitialized()
     {
         refresh();
-        GameHost.Instance.HostStateChanged += ()=> InvokeAsync(refresh);
+        GameHost.Instance.HostStateChanged += () => InvokeAsync(refresh);
     }
 }

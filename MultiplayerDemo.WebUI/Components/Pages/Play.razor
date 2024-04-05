@@ -14,14 +14,14 @@ else if(!game.IsGameOver)
             <h4>My Tiles</h4>
             @foreach (var tile in me.Tiles)
             {
-                <p @onclick=@(()=>playTile(tile))>(@tile.Num1, @tile.Num2)</p>
+                <p @onclick=@(()=>playTile(tile))>@tile.Num1 &nbsp;&nbsp;|&nbsp;&nbsp; @tile.Num2</p>
             }
         </div>
         <div class="col-4">
             <h4>Game Board</h4>
             @foreach (var tile in game.Board)
             {
-                <p>(@tile.Num1, @tile.Num2)</p>
+                <p>@tile.Num1 &nbsp;&nbsp;|&nbsp;&nbsp; @tile.Num2</p>
             }
         </div>
         <div class="col-4">
@@ -34,7 +34,7 @@ else if(!game.IsGameOver)
                 <h4>@other.Name's Tiles</h4>
                 foreach (var tile in other.Tiles)
                 {
-                    <p>(X, X)</p>
+                    <p>X &nbsp;&nbsp;|&nbsp;&nbsp; X</p>
                 }
             }
         </div>
@@ -55,15 +55,15 @@ else
     <h3>Game Over</h3>
     @if(game.Player1.Tiles.Count == game.Player2.Tiles.Count)
     {
-        <p>It's a tie!</p>
+        <h4 class="tie">It's a tie!</h4>
     }
     else if(game.Winner == other)
     {
-        <p>You lose :-(</p>
+        <h4 class="lose">You lose :-(</h4>
     }
     else
     {
-        <p>You win!</p>
+        <h4 class="win">You win!</h4>
     }
     <button @onclick="playAgain">Play Again</button>
 }
