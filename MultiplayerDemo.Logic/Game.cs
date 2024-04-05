@@ -1,12 +1,7 @@
-﻿
-global using MultiplayerDemo.Logic.Exceptions;
-
-namespace MultiplayerDemo.Logic;
+﻿namespace MultiplayerDemo.Logic;
 
 public class Game
 {
-    public static Game Instance { get; private set; } = new Game();
-
     public Player? Player1 { get; private set; }
     public Player? Player2 { get; private set; }
     public List<Tile> Board { get; private set; }
@@ -62,9 +57,9 @@ public class Game
         GameReset?.Invoke();
     }
 
-    public void PlayTile(Player newPlayer1, Tile tileToPlay)
+    public void PlayTile(Player player, Tile tileToPlay)
     {
-        if (newPlayer1.Tiles.Contains(tileToPlay) == false)
+        if (player.Tiles.Contains(tileToPlay) == false)
         {
             throw new InvalidMoveException();
         }
@@ -74,11 +69,11 @@ public class Game
         if (tileToPlay.Num1 == numtomatch)
         {
             Board.Add(tileToPlay);
-            newPlayer1.Tiles.Remove(tileToPlay);
+            player.Tiles.Remove(tileToPlay);
         }
         else if (tileToPlay.Num2 == numtomatch)
         {
-            newPlayer1.Tiles.Remove(tileToPlay);
+            player.Tiles.Remove(tileToPlay);
             Board.Add(new Tile(tileToPlay.Num2, tileToPlay.Num1));
         }
         else

@@ -12,7 +12,7 @@
 @code {
     void joinGame(int gameId)
     {
-        logger.LogInformation("Joining game {gameId}", gameId);
+        logger.LogInformation("Joining game {id}", gameId);
         navManager.NavigateTo($"/join?gameid={gameId}");
     }
     void createNewGame()
