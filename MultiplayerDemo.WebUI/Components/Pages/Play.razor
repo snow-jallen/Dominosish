@@ -69,18 +69,34 @@ else
 }
 
 @code {
-    Game game = Game.Instance;
+    Game? game
+    {
+        get
+        {
+            if(GameId is null)
+               return null;
+            return GameHost.Instance.Games[GameId.Value];
+        }
+    }
     Player? me;
     Player? other;
     List<string> errors = new();
 
-    protected override void OnInitialized()
+    [SupplyParameterFromQuery]
+    public int? GameId{get;set;}
+
+    [SupplyParameterFromQuery]
+    public string PlayerName { get; set; }
+
+    protected override void OnParametersSet()
     {
         game.GameStateChanged += () =>
         {
             if (other is null)
             {
-                other = game.Player1 == me ? game.Player2 : game.Player1;
+                other = game.Player1 == me ? 
+                    game.Player2 : 
+                    game.Player1;
             }
             InvokeAsync(StateHasChanged);
         };
@@ -89,13 +105,7 @@ else
         {
             NavigationManager.NavigateTo("/");
         };
-    }
 
-    [SupplyParameterFromQuery]
-    public string PlayerName { get; set; }
-
-    protected override void OnParametersSet()
-    {
         me = game.Player1?.Name == PlayerName ? game.Player1 : game.Player2?.Name == PlayerName ? game.Player2 : null;
         other = game.Player1 == me ? game.Player2 : game.Player1;
         errors.Clear();

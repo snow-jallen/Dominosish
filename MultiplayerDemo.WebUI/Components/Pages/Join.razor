@@ -1,0 +1,48 @@
+﻿@page "/join"
+@inject NavigationManager NavigationManager
+
+<PageTitle>Join</PageTitle>
+
+<h1>Play Dominos-ish</h1>
+
+@if(game is null)
+{
+    <p>What?  Are you missing the gameid query string parameter?</p>
+}
+else if(game.Player2 is null)
+{
+    <input @bind=newPlayerName placeholder="Your Name" />
+    <button @onclick=joinGame>Join Game</button>
+}
+else
+{
+    <p>Sorry, looks like the game is full</p>
+    <p>@game.Player1.Name is already playing @game.Player2.Name</p>
+}
+
+@code {
+
+    [SupplyParameterFromQuery]
+    public int? GameId{get;set;}
+
+    string newPlayerName;
+    Game? game
+    {
+        get
+        {
+            if(GameId is null)
+               return null;
+            return GameHost.Instance.Games[GameId.Value];
+        }
+    } 
+
+    protected override void OnInitialized()
+    {
+        game.GameStateChanged += ()=> InvokeAsync(StateHasChanged);
+    }
+    void joinGame()
+    {
+        game.Join(newPlayerName);
+        NavigationManager.NavigateTo($"/play?playerName={newPlayerName}&gameid={GameId}");
+    }
+}

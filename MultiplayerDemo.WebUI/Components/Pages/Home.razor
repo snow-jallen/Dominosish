@@ -1,31 +1,24 @@
-﻿@page "/"
-@inject NavigationManager NavigationManager
+@page "/"
+@inject NavigationManager navManager
+@inject ILogger<Home> logger
 
-<PageTitle>Home</PageTitle>
-
-<h1>Play Dominos-ish</h1>
-
-@if(Game.Instance.Player2 is null)
+<h1>Games</h1>
+@for(var gameId = 0;gameId < GameHost.Instance.Games.Where(g => g.Player2 is null).Count(); gameId++)
 {
-    <input @bind=newPlayerName placeholder="Your Name" />
-    <button @onclick=joinGame>Join Game</button>
+    <button @onclick=@(() => joinGame(gameId-1))>Join Game</button>
 }
-else
-{
-    <p>Sorry, looks like the game is full</p>
-    <p>@game.Player1.Name is already playing @game.Player2.Name</p>
-}
+<button @onclick=createNewGame>Create New Game</button>
 
 @code {
-    string newPlayerName;
-    Game game = Game.Instance;
-    protected override void OnInitialized()
+    void joinGame(int gameId)
     {
-        game.GameStateChanged += ()=> InvokeAsync(StateHasChanged);
+        logger.LogInformation("Joining game {gameId}", gameId);
+        navManager.NavigateTo($"/join?gameid={gameId}");
     }
-    void joinGame()
+    void createNewGame()
     {
-        game.Join(newPlayerName);
-        NavigationManager.NavigateTo($"/play?playerName={newPlayerName}");
+        var newGame = new Game();
+        GameHost.Instance.Games.Add(newGame);
+        navManager.NavigateTo($"/join?gameid={GameHost.Instance.Games.Count-1}");
     }
 }

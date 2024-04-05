@@ -15,4 +15,15 @@
     {
         currentCount++;
     }
+
+    protected override void OnParametersSet()
+    {
+        if(!int.TryParse(StartingValue, out currentCount))
+        {
+            currentCount = -50;
+        }
+    }
+
+    [SupplyParameterFromQuery]
+    public string StartingValue{get;set;}
 }

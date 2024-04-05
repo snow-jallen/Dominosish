@@ -1,0 +1,38 @@
+@page "/p2"
+
+<h1>This will always show up.</h1>
+<button @onclick="(() => flag = !flag)">Button with anonymous lambda</button>
+<button @onclick="toggleFlag">Button with named delegate</button>
+<a href="/p2?flag=true">TRUE</a>
+<a href="/p2?flag=false">FALSE</a>
+<a href=@dest>@((!flag).ToString())</a>
+
+
+@if(flag)
+{
+    <p>Flag is (not) FALSE!</p>
+}
+else
+{
+    <ul>
+        <li>Flag is (not) true</li>
+        <li>THis is completely different content</li>
+        <li>Spelling is optional</li>
+    </ul>
+}
+
+@code {
+    bool flag = false;
+    string dest;
+
+    void toggleFlag() => flag = !flag;
+
+    [SupplyParameterFromQuery]
+    public string Flag{get;set;}
+
+    protected override void OnParametersSet()
+    {
+        bool.TryParse(Flag, out flag);
+        dest = $"/p2?flag={!flag}";
+    }
+}
