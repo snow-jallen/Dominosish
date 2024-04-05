@@ -1,5 +1,8 @@
 ﻿@page "/play"
+@using KristofferStrube.Blazor.Confetti
 @inject NavigationManager NavigationManager
+@inject ConfettiService confetti
+@inject ILogger<Play> logger
 
 @if (me is null)
 {
@@ -106,6 +109,11 @@ else
                 other = game.Player1 == me ? 
                     game.Player2 : 
                     game.Player1;
+            }
+            if(game.Winner is not null && game.Winner == me)
+            {
+                logger.LogInformation("I won!!!  [show the confetti!]");
+                confetti.Activate(new());
             }
             InvokeAsync(StateHasChanged);
         };
