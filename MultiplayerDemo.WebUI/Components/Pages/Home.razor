@@ -5,15 +5,14 @@
 <h1>Games</h1>
 @foreach(var item in openGames)
 {
-    <button @onclick=@(() => joinGame(item.Id))>Join Game with @(item.Game.Player1?.Name ?? "[Unknown Player]")</button>
+    <button @onclick=@(() => joinGame(item.Id)) class="btn btn-primary m-3">
+        Join Game with @(item.Game.Player1?.Name ?? "[Unknown Player]")
+    </button>
 }
-<button @onclick=createNewGame>Create New Game</button>
+<button class="btn btn-primary m-3" @onclick=createNewGame>Create New Game</button>
 
 @code {
-    List<(int Id, Game Game)> openGames = (from game in GameHost.Instance.Games
-                                          let index = GameHost.Instance.Games.IndexOf(game)
-                                          where game.Player2 is null
-                                          select (index, game)).ToList();
+    List<(int Id, Game Game)> openGames;
 
     void joinGame(int gameId)
     {
@@ -38,6 +37,7 @@
     }
     protected override void OnInitialized()
     {
+        refresh();
         GameHost.Instance.HostStateChanged += ()=> InvokeAsync(refresh);
     }
 }

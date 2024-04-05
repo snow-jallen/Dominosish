@@ -75,7 +75,16 @@ else
         {
             if(GameId is null)
                return null;
-            return GameHost.Instance.Games[GameId.Value];
+
+            try
+            {
+                return GameHost.Instance.Games[GameId.Value];
+            }
+            catch
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            return null;
         }
     }
     Player? me;

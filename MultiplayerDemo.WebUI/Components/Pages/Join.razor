@@ -5,14 +5,16 @@
 
 <h1>Play Dominos-ish</h1>
 
-@if(game is null)
+@if (game is null)
 {
-    <p>What?  Are you missing the gameid query string parameter?</p>
+    <p>What? Are you missing the gameid query string parameter?</p>
 }
-else if(game.Player2 is null)
+else if (game.Player2 is null)
 {
-    <input @bind=newPlayerName placeholder="Your Name" />
-    <button @onclick=joinGame>Join Game</button>
+    <form @onsubmit=joinGame>
+        <input @bind=newPlayerName placeholder="Your Name" />
+        <input type=submit value='Join Game' />
+    </form>
 }
 else
 {
@@ -23,22 +25,32 @@ else
 @code {
 
     [SupplyParameterFromQuery]
-    public int? GameId{get;set;}
+    public int? GameId { get; set; }
 
     string newPlayerName;
+
     Game? game
     {
         get
         {
-            if(GameId is null)
-               return null;
-            return GameHost.Instance.Games[GameId.Value];
+            if (GameId is null)
+                return null;
+
+            try
+            {
+                return GameHost.Instance.Games[GameId.Value];
+            }
+            catch
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            return null;
         }
-    } 
+    }
 
     protected override void OnInitialized()
     {
-        game.GameStateChanged += ()=> InvokeAsync(StateHasChanged);
+        game.GameStateChanged += () => InvokeAsync(StateHasChanged);
     }
     void joinGame()
     {
