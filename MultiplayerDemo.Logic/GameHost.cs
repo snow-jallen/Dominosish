@@ -10,4 +10,7 @@ public class GameHost
     } 
 
     public List<Game> Games{get;} = new();
+    public void RaiseHostStateChanged() => HostStateChanged?.Invoke();
+
+    public event Action HostStateChanged;
 }

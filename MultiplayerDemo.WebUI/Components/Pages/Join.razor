@@ -43,6 +43,7 @@ else
     void joinGame()
     {
         game.Join(newPlayerName);
+        GameHost.Instance.RaiseHostStateChanged();
         NavigationManager.NavigateTo($"/play?playerName={newPlayerName}&gameid={GameId}");
     }
 }

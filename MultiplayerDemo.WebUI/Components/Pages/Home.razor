@@ -3,22 +3,41 @@
 @inject ILogger<Home> logger
 
 <h1>Games</h1>
-@for(var gameId = 0;gameId < GameHost.Instance.Games.Where(g => g.Player2 is null).Count(); gameId++)
+@foreach(var item in openGames)
 {
-    <button @onclick=@(() => joinGame(gameId-1))>Join Game</button>
+    <button @onclick=@(() => joinGame(item.Id))>Join Game with @(item.Game.Player1?.Name ?? "[Unknown Player]")</button>
 }
 <button @onclick=createNewGame>Create New Game</button>
 
 @code {
+    List<(int Id, Game Game)> openGames = (from game in GameHost.Instance.Games
+                                          let index = GameHost.Instance.Games.IndexOf(game)
+                                          where game.Player2 is null
+                                          select (index, game)).ToList();
+
     void joinGame(int gameId)
     {
         logger.LogInformation("Joining game {id}", gameId);
         navManager.NavigateTo($"/join?gameid={gameId}");
     }
+
     void createNewGame()
     {
         var newGame = new Game();
         GameHost.Instance.Games.Add(newGame);
+        GameHost.Instance.RaiseHostStateChanged();
         navManager.NavigateTo($"/join?gameid={GameHost.Instance.Games.Count-1}");
+    }
+    void refresh()
+    {
+        openGames = (from game in GameHost.Instance.Games
+                                          let index = GameHost.Instance.Games.IndexOf(game)
+                                          where game.Player2 is null
+                                          select (index, game)).ToList();
+        StateHasChanged();
+    }
+    protected override void OnInitialized()
+    {
+        GameHost.Instance.HostStateChanged += ()=> InvokeAsync(refresh);
     }
 }
