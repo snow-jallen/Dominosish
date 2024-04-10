@@ -1,11 +1,12 @@
 ﻿@page "/play"
+@using MultiplayerDemo.Persistence
 @inject NavigationManager NavigationManager
 
 @if (me is null)
 {
     <div>There is no player @PlayerName</div>
 }
-else if(!game.IsGameOver)
+else if (!game.IsGameOver)
 {
     <h3>Play for @me.Name</h3>
 
@@ -53,22 +54,44 @@ else if(!game.IsGameOver)
 else
 {
     <h3>Game Over</h3>
-    @if(game.Player1.Tiles.Count == game.Player2.Tiles.Count)
+    @if (game.Player1.Tiles.Count == game.Player2.Tiles.Count)
     {
         <h4 class="tie">It's a tie!</h4>
     }
-    else if(game.Winner == other)
+    else if (game.Winner == other)
     {
         <h4 class="lose">You lose :-(</h4>
     }
     else
     {
         <h4 class="win">You win!</h4>
+
+        @if (highScoreFormVisible)
+        {
+            <form @onsubmit="saveHighScore">
+                <input type="text" @bind="highScoreQuote" />
+                <button type="submit">Save High Score</button>
+            </form>
+        }
     }
+
     <button @onclick="playAgain">Play Again</button>
 }
 
 @code {
+    private bool highScoreFormVisible = true;
+    private async Task saveHighScore()
+    {
+        await JsonHighScoreRepository.Instance.AddHighScoreAsync(new HighScore
+            {
+                Name = me.Name,
+                Quote = highScoreQuote,
+                Score = me.Tiles.Count,
+                Timestamp = DateTime.Now
+            });
+        highScoreFormVisible = false;
+    }
+    string highScoreQuote = string.Empty;
     Game? game
     {
         get
