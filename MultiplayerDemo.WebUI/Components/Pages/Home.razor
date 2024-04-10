@@ -2,6 +2,8 @@
 @inject NavigationManager navManager
 @inject ILogger<Home> logger
 
+<Login />
+
 @if (openGames.Any())
 {
     <h1>Join an Existing Game</h1>
@@ -10,6 +12,9 @@
         <button @onclick=@(() => joinGame(item.Id)) class="btn btn-primary m-3">
             Join game with @(item.Game.Player1?.Name ?? "[Unknown Player]")
         </button>
+        <div>
+            <Stats GameId=@item.Id.ToString() />
+        </div>
     }
     <hr>
 }

@@ -1,0 +1,29 @@
+<h4>Login</h4>
+
+@if(loggedInOk)
+{
+    <h1>Hi there, @username</h1>
+}
+else
+{
+<form @onsubmit=loginUser>
+    <label>Username
+        <input @bind=username />
+    </label>
+
+    <label>Password
+        <input type='password' @bind=password />
+    </label>
+
+    <input type='submit' value='Log In' />
+</form>
+}
+@code {
+    string username;
+    string password;
+    bool loggedInOk = false;
+    void loginUser()
+    {
+        loggedInOk = username=="fred" && password=="password";
+    }
+}

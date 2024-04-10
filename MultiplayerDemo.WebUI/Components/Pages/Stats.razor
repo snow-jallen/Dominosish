@@ -1,0 +1,44 @@
+@page "/stats/{GameId}"
+@inject NavigationManager NavigationManager
+
+<h1>Stats for game @GameId</h1>
+Player 1 tile count: @Game?.Player1?.Tiles.Count
+<br>
+Player 2 tile count: @Game?.Player2?.Tiles.Count
+<br>
+
+@code {
+    [Parameter]
+    public string GameId{get;set;}
+
+    protected override void OnParametersSet()
+    {
+        Game.GameStateChanged += () =>
+        {
+            InvokeAsync(() => 
+            {
+                StateHasChanged();
+            });
+        };
+    }
+
+    public Game Game
+    {
+        get
+        {
+            if(int.TryParse(GameId, out int id))
+            {
+                try
+                {
+                    return GameHost.Instance.Games[id];
+                }
+                catch
+                {
+                    NavigationManager.NavigateTo("/");
+                }
+            }
+                      
+            return null;
+        }
+    }
+}
