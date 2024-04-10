@@ -80,9 +80,9 @@ else
 
 @code {
     private bool highScoreFormVisible = true;
-    private async Task saveHighScore()
+    private void saveHighScore()
     {
-        await JsonHighScoreRepository.Instance.AddHighScoreAsync(new HighScore
+        JsonHighScoreRepository.Instance.AddHighScore(new HighScore
             {
                 Name = me.Name,
                 Quote = highScoreQuote,
